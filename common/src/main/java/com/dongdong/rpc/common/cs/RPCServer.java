@@ -2,7 +2,9 @@ package com.dongdong.rpc.common.cs;
 
 public interface RPCServer {
 
-    void start(int port);
+    boolean addService(String serviceName, Object service);
+
+    void start();
 
     void stop();
 }

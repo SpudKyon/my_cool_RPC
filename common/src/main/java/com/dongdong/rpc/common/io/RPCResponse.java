@@ -2,10 +2,12 @@ package com.dongdong.rpc.common.io;
 
 import com.dongdong.rpc.common.enums.ResponseCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
 @Getter
+@ToString
 public class RPCResponse<T> implements Serializable {
   private final T data;
 
