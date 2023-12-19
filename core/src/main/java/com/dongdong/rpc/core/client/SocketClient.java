@@ -26,9 +26,10 @@ public class SocketClient implements RPCClient {
     try (Socket socket = new Socket(host, port);
          ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
          ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream())) {
-        objectOutputStream.writeObject(request);
-        objectOutputStream.flush();
-        return (RPCResponse) objectInputStream.readObject();
+      log.info("sending request to {}:{}", host, port);
+      objectOutputStream.writeObject(request);
+      objectOutputStream.flush();
+      return (RPCResponse) objectInputStream.readObject();
     } catch (Exception e) {
       log.error("occur exception:", e);
       return null;

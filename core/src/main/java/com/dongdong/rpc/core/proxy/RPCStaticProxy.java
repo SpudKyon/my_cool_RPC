@@ -19,12 +19,8 @@ import java.lang.reflect.Proxy;
 public class RPCStaticProxy implements InvocationHandler {
 
   private RPCClient client;
-  private final String host;
-  private final int port;
 
   public RPCStaticProxy(String host, int port) {
-    this.host = host;
-    this.port = port;
     client = new SocketClient(host, port);
   }
 
@@ -32,7 +28,6 @@ public class RPCStaticProxy implements InvocationHandler {
   public <T> T getProxy(Class<T> clazz) {
     return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
   }
-
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -45,8 +40,11 @@ public class RPCStaticProxy implements InvocationHandler {
             .parameters(args) // get parameters
             .paramTypes(method.getParameterTypes()) // get parameter types
             .build();
-    log.info("sending request to {}:{}", host, port);
     RPCResponse response = client.sendRequest(request);
+    if (response == null) {
+      log.error("response is null for request: {}", request);
+      throw new RPCException("response is null");
+    }
     log.debug("request: {}", request);
     log.debug("response: {}", response);
     return response.getData();
