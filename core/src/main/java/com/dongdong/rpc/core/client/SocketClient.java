@@ -35,4 +35,9 @@ public class SocketClient implements RPCClient {
       return null;
     }
   }
+
+  @Override
+  public void shutdown() {
+    log.info("shutting down client");
+  }
 }

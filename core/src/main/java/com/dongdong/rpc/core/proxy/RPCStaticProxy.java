@@ -18,10 +18,10 @@ import java.lang.reflect.Proxy;
 @Slf4j
 public class RPCStaticProxy implements InvocationHandler {
 
-  private RPCClient client;
+  private final RPCClient client;
 
-  public RPCStaticProxy(String host, int port) {
-    client = new SocketClient(host, port);
+  public RPCStaticProxy(RPCClient client) {
+    this.client = client;
   }
 
   @SuppressWarnings("unchecked")
@@ -31,22 +31,32 @@ public class RPCStaticProxy implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    if (client == null) {
-      throw new RPCException("client is null");
+    try {
+      if (client == null) {
+        throw new RPCException("client is null");
+      }
+      RPCRequest request = RPCRequest.builder()
+              .interfaceName(method.getDeclaringClass().getName())  // get interface name
+              .methodName(method.getName())                         // get method name
+              .parameters(args)                                     // get parameters
+              .paramTypes(method.getParameterTypes())               // get parameter types
+              .build();
+      RPCResponse response = client.sendRequest(request);
+      if (response == null) {
+        log.error("response is null for request: {}", request);
+        throw new RPCException("response is null");
+      }
+      log.debug("request: {}", request);
+      log.debug("response: {}", response);
+      if (response.getCode() == 200) {
+        return response.getData();
+      } else {
+        throw new RPCException(response.getMessage());
+      }
+    } catch (Exception e) {
+      log.error("error: {}", e.getMessage());
+      client.shutdown();
     }
-    RPCRequest request = RPCRequest.builder()
-            .interfaceName(method.getDeclaringClass().getName()) // get interface name
-            .methodName(method.getName()) // get method name
-            .parameters(args) // get parameters
-            .paramTypes(method.getParameterTypes()) // get parameter types
-            .build();
-    RPCResponse response = client.sendRequest(request);
-    if (response == null) {
-      log.error("response is null for request: {}", request);
-      throw new RPCException("response is null");
-    }
-    log.debug("request: {}", request);
-    log.debug("response: {}", response);
-    return response.getData();
+    return null;
   }
 }

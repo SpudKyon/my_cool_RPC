@@ -5,4 +5,6 @@ import com.dongdong.rpc.common.io.RPCResponse;
 
 public interface RPCClient {
   RPCResponse sendRequest(RPCRequest request);
+
+  void shutdown();
 }

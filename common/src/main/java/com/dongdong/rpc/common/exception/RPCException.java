@@ -1,11 +1,17 @@
 package com.dongdong.rpc.common.exception;
 
+import com.dongdong.rpc.common.enums.ErrorCode;
+
 public class RPCException extends RuntimeException{
 
   private String message;
 
     public RPCException(String message) {
         super(message);
+    }
+
+    public RPCException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
     }
 
     public RPCException(String message, Throwable cause) {

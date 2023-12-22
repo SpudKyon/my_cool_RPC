@@ -3,13 +3,16 @@ package com.dongdong.test.client;
 import com.dongdong.rpc.common.RequestParam;
 import com.dongdong.rpc.common.service.GreetingService;
 import com.dongdong.rpc.common.service.StatusService;
-import com.dongdong.rpc.core.client.SocketClient;
+import com.dongdong.rpc.core.client.NettyClient;
+import com.dongdong.rpc.core.codec.CoolDecoder;
+import com.dongdong.rpc.core.codec.CoolEncoder;
 import com.dongdong.rpc.core.proxy.RPCStaticProxy;
+import com.dongdong.rpc.core.serializer.JsonSerializer;
 import com.dongdong.rpc.core.service.impl.SS;
 
-public class SocketClientTest {
+public class NettyClientTest {
   public static void main(String[] args) {
-    SocketClient client = new SocketClient("localhost", 9090);
+    NettyClient<CoolDecoder, CoolEncoder<JsonSerializer>> client = new NettyClient<>("localhost", 8080, new CoolDecoder(), new CoolEncoder<>(new JsonSerializer()));
     RPCStaticProxy proxy = new RPCStaticProxy(client);
     GreetingService greetingService = proxy.getProxy(GreetingService.class);
     System.out.println(greetingService.sayHello(1));
@@ -22,5 +25,6 @@ public class SocketClientTest {
     System.out.println(statusService.setStatus("running"));
     System.out.println(statusService.getStatus());
     System.out.println(proxy.getProxy(SS.class).run());
+    client.shutdown();
   }
 }
