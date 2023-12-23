@@ -15,15 +15,16 @@ public class NettyServerWorker extends SimpleChannelInboundHandler<RPCRequest> {
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, RPCRequest msg) throws Exception {
+    ServiceMap serviceMap = ServiceMap.getInstance();
     try {
       log.debug("new connection: {}, msg: {}", ctx.channel().remoteAddress(), msg);
       String serviceName = msg.getInterfaceName();
-      if (!NettyServer.serviceMap.containsKey(serviceName)) {
+      if (!serviceMap.containsKey(serviceName)) {
         throw new RPCException("service not found: " + serviceName);
       }
       Method method = Class.forName(serviceName)
               .getMethod(msg.getMethodName(), msg.getParamTypes());
-      Object service = NettyServer.serviceMap.get(serviceName);
+      Object service = serviceMap.get(serviceName);
       Object result = method.invoke(service, msg.getParameters());
       log.debug("result: " + result);
       ChannelFuture future = ctx.writeAndFlush(RPCResponse.ok(result));

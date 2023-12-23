@@ -19,23 +19,23 @@ public class SocketServerWorker implements Runnable {
 
   @Override
   public void run() {
+    ServiceMap serviceMap = ServiceMap.getInstance();
     try (ObjectInputStream os = new ObjectInputStream(socket.getInputStream());
          ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream())) {
       RPCRequest request = (RPCRequest) os.readObject();
-      if (!SocketServer.serviceMap.containsKey(request.getInterfaceName())) {
+      if (!serviceMap.containsKey(request.getInterfaceName())) {
         log.error("service not found: " + request.getInterfaceName());
         throw new RPCException("service not found: " + request.getInterfaceName());
       }
       Method method = Class.forName(request.getInterfaceName())
               .getMethod(request.getMethodName(), request.getParamTypes());
-      Object service = SocketServer.serviceMap.get(request.getInterfaceName());
+      Object service = serviceMap.get(request.getInterfaceName());
       Object result = method.invoke(service, request.getParameters());
       log.debug("result: " + result);
       oos.writeObject(RPCResponse.ok(result));
       oos.flush();
     } catch (Exception e) {
       log.error("error when handling request: " + e.getMessage());
-      e.printStackTrace();
     }
   }
 }

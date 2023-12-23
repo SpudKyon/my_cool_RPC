@@ -15,11 +15,12 @@ public class SocketServer implements RPCServer {
   /**
    * interface name -> service object
    */
-  static ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private final ServiceMap serviceMap;
 
   private final int port;
 
   public SocketServer(int port) {
+    serviceMap = ServiceMap.getInstance();
     this.port = port;
     /**
      * corePoolSize: the number of threads to keep in the pool, even if they are idle, unless {@code allowCoreThreadTimeOut} is set
@@ -36,15 +37,6 @@ public class SocketServer implements RPCServer {
     BlockingQueue<Runnable> workingQueue = new ArrayBlockingQueue<>(100);
     ThreadFactory threadFactory = Executors.defaultThreadFactory();
     threadPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workingQueue, threadFactory);
-  }
-
-  @Override
-  public boolean addService(String serviceName, Object service) {
-    if (serviceMap.containsKey(serviceName)) {
-      return false;
-    }
-    serviceMap.put(serviceName, service);
-    return true;
   }
 
   @Override

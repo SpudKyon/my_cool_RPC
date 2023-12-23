@@ -9,7 +9,7 @@ import com.dongdong.rpc.core.service.impl.SS;
 
 public class SocketClientTest {
   public static void main(String[] args) {
-    SocketClient client = new SocketClient("localhost", 9090);
+    SocketClient client = new SocketClient("localhost", 9091);
     RPCStaticProxy proxy = new RPCStaticProxy(client);
     GreetingService greetingService = proxy.getProxy(GreetingService.class);
     System.out.println(greetingService.sayHello(1));

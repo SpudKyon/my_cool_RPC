@@ -1,7 +1,6 @@
 package com.dongdong.rpc.core.server;
 
 import com.dongdong.rpc.common.cs.RPCServer;
-import com.dongdong.rpc.core.client.NettyClientWorker;
 import com.dongdong.rpc.core.codec.CoolDecoder;
 import com.dongdong.rpc.core.codec.CoolEncoder;
 import com.dongdong.rpc.core.serializer.JsonSerializer;
@@ -14,15 +13,13 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 @Slf4j
 public class NettyServer<D extends ChannelInboundHandlerAdapter, E extends ChannelOutboundHandlerAdapter> implements RPCServer {
 
   /**
    * interface name -> service object
    */
-  public static ConcurrentHashMap<String, Object> serviceMap = new ConcurrentHashMap<>();
+  private final ServiceMap serviceMap;
 
   private final int port;
   private final E enc;
@@ -32,15 +29,7 @@ public class NettyServer<D extends ChannelInboundHandlerAdapter, E extends Chann
     this.port = port;
     this.dec = dec;
     this.enc = enc;
-  }
-
-  @Override
-  public boolean addService(String serviceName, Object service) {
-    if (serviceMap.containsKey(serviceName)) {
-      return false;
-    }
-    serviceMap.put(serviceName, service);
-    return true;
+    serviceMap = ServiceMap.getInstance();
   }
 
   @Override
