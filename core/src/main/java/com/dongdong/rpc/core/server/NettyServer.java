@@ -11,9 +11,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Getter
 public class NettyServer<D extends ChannelInboundHandlerAdapter, E extends ChannelOutboundHandlerAdapter> implements RPCServer {
 
   /**

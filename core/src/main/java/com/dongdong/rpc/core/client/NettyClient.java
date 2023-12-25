@@ -4,6 +4,7 @@ import com.dongdong.rpc.common.cs.RPCClient;
 import com.dongdong.rpc.common.exception.RPCException;
 import com.dongdong.rpc.common.io.RPCRequest;
 import com.dongdong.rpc.common.io.RPCResponse;
+import com.dongdong.rpc.core.NacosServiceRegistry;
 import com.dongdong.rpc.core.codec.CoolDecoder;
 import com.dongdong.rpc.core.codec.CoolEncoder;
 import com.dongdong.rpc.core.serializer.JsonSerializer;
@@ -17,20 +18,22 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 @Slf4j
 public class NettyClient<D extends ChannelInboundHandlerAdapter, E extends ChannelOutboundHandlerAdapter> implements RPCClient {
 
   private final Bootstrap bootstrap;
 
-  private final String host;
-  private final int port;
+  private final String nacosHost;
+  private final int nacosPort;
 
   private final E enc;
   private final D dec;
 
   public NettyClient(String host, int port, D dec, E enc) {
-    this.host = host;
-    this.port = port;
+    this.nacosHost = host;
+    this.nacosPort = port;
     this.dec = dec;
     this.enc = enc;
     bootstrap = new Bootstrap();
@@ -58,8 +61,11 @@ public class NettyClient<D extends ChannelInboundHandlerAdapter, E extends Chann
   @Override
   public RPCResponse sendRequest(RPCRequest request) {
     try {
-      ChannelFuture future = bootstrap.connect(host, port).sync();
-      log.info("client connect to server {}:{}", host, port);
+      NacosServiceRegistry nacos = NacosServiceRegistry.getInstance();
+      InetSocketAddress address = nacos.lookupService(request.getInterfaceName());
+      
+      ChannelFuture future = bootstrap.connect(address.getAddress(), address.getPort()).sync();
+      log.info("client connect to server {}:{}", address.getAddress(), address.getPort());
       Channel channel = future.channel();
       if (channel != null) {
         channel.writeAndFlush(request).addListener(future1 -> {

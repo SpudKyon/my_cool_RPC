@@ -12,7 +12,7 @@ import com.dongdong.rpc.core.service.impl.SS;
 
 public class NettyClientTest {
   public static void main(String[] args) {
-    NettyClient<CoolDecoder, CoolEncoder<JsonSerializer>> client = new NettyClient<>("localhost", 8080, new CoolDecoder(), new CoolEncoder<>(new JsonSerializer()));
+    NettyClient<CoolDecoder, CoolEncoder<JsonSerializer>> client = new NettyClient<>("localhost", 8848, new CoolDecoder(), new CoolEncoder<>(new JsonSerializer()));
     RPCStaticProxy proxy = new RPCStaticProxy(client);
     GreetingService greetingService = proxy.getProxy(GreetingService.class);
     System.out.println(greetingService.sayHello(1));

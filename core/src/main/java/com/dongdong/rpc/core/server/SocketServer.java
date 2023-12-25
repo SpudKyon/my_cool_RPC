@@ -1,6 +1,7 @@
 package com.dongdong.rpc.core.server;
 
 import com.dongdong.rpc.common.cs.RPCServer;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.ServerSocket;
@@ -8,6 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.*;
 
 @Slf4j
+@Getter
 public class SocketServer implements RPCServer {
 
   private final ExecutorService threadPool;

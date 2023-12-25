@@ -1,9 +1,12 @@
 package com.dongdong.rpc.core.server;
 
+import com.dongdong.rpc.common.ServiceRegistry;
+import com.dongdong.rpc.common.cs.RPCServer;
+
+import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServiceMap extends ConcurrentHashMap<String, Object>{
-
+public class ServiceMap extends ConcurrentHashMap<String, Object> {
 
   private static volatile ServiceMap instance;
 
@@ -28,5 +31,12 @@ public class ServiceMap extends ConcurrentHashMap<String, Object>{
     }
     super.put(serviceName, service);
     return true;
+  }
+
+  public void pushService(ServiceRegistry registry, RPCServer server) {
+    InetSocketAddress address = new InetSocketAddress(server.getPort());
+    for (String serviceName : super.keySet()) {
+      registry.register(serviceName, address);
+    }
   }
 }
