@@ -17,7 +17,7 @@ public class NettyServerTest {
     ServiceMap serviceMap = ServiceMap.getInstance();
     serviceMap.addService(GreetingServiceImpl.class.getInterfaces()[0].getName(), new GreetingServiceImpl());
     serviceMap.addService(StatusServiceImpl.class.getInterfaces()[0].getName(), new StatusServiceImpl());
-    serviceMap.pushService(NacosServiceRegistry.getInstance(), server);
+    serviceMap.pushAllService(NacosServiceRegistry.getInstance(), server);
     server.start();
   }
 }

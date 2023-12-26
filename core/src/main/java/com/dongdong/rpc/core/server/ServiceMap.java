@@ -33,10 +33,17 @@ public class ServiceMap extends ConcurrentHashMap<String, Object> {
     return true;
   }
 
-  public void pushService(ServiceRegistry registry, RPCServer server) {
+  public void pushAllService(ServiceRegistry registry, RPCServer server) {
     InetSocketAddress address = new InetSocketAddress(server.getPort());
     for (String serviceName : super.keySet()) {
       registry.register(serviceName, address);
+    }
+  }
+
+  public void popAllService(ServiceRegistry registry, RPCServer server) {
+    InetSocketAddress address = new InetSocketAddress(server.getPort());
+    for (String serviceName : super.keySet()) {
+      registry.unregister(serviceName, address);
     }
   }
 }

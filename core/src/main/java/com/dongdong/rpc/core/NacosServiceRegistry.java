@@ -63,4 +63,14 @@ public class NacosServiceRegistry implements ServiceRegistry {
       throw new RPCException(e.getMessage(), e);
     }
   }
+
+  @Override
+  public void unregister(String serviceName, InetSocketAddress address) {
+    try {
+      namingService.deregisterInstance(serviceName, address.getHostName(), address.getPort());
+    } catch (Exception e) {
+      log.error("occur exception:", e);
+      throw new RPCException(e.getMessage(), e);
+    }
+  }
 }

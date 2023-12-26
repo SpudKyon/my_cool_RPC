@@ -4,6 +4,7 @@ import com.dongdong.rpc.common.cs.RPCServer;
 import com.dongdong.rpc.core.codec.CoolDecoder;
 import com.dongdong.rpc.core.codec.CoolEncoder;
 import com.dongdong.rpc.core.serializer.JsonSerializer;
+import com.dongdong.rpc.core.utils.ServiceShutdownHook;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -54,6 +55,7 @@ public class NettyServer<D extends ChannelInboundHandlerAdapter, E extends Chann
                 }
               });
       ChannelFuture future = bootstrap.bind(port).sync();
+      ServiceShutdownHook.getInstance().clearRegisteredService(this);
       future.channel().closeFuture().sync(); // block until server socket closed
     } catch (Exception e) {
       log.error("error when starting server: " + e.getMessage());
