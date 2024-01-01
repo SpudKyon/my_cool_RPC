@@ -63,7 +63,9 @@ public class NettyClient<D extends ChannelInboundHandlerAdapter, E extends Chann
     try {
       NacosServiceRegistry nacos = NacosServiceRegistry.getInstance();
       InetSocketAddress address = nacos.lookupService(request.getInterfaceName());
-      
+      if (address == null) {
+        throw new RPCException("no service available");
+      }
       ChannelFuture future = bootstrap.connect(address.getAddress(), address.getPort()).sync();
       log.info("client connect to server {}:{}", address.getAddress(), address.getPort());
       Channel channel = future.channel();

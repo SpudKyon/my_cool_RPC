@@ -4,34 +4,35 @@ import com.dongdong.rpc.common.cs.RPCClient;
 import com.dongdong.rpc.common.exception.RPCException;
 import com.dongdong.rpc.common.io.RPCRequest;
 import com.dongdong.rpc.common.io.RPCResponse;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
-@Getter
-@Setter
 @Slf4j
-public class RPCStaticProxy implements InvocationHandler {
+public class RPCDynamicProxy implements MethodInterceptor {
 
   private final RPCClient client;
 
-  public RPCStaticProxy(RPCClient client) {
+  public RPCDynamicProxy(RPCClient client) {
     this.client = client;
   }
 
   @SuppressWarnings("unchecked")
   public <T> T getProxy(Class<T> interfaceClass) {
-    return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass}, this);
+    Enhancer enhancer = new Enhancer();
+    enhancer.setSuperclass(interfaceClass);
+    enhancer.setCallback(this);
+    return (T) enhancer.create();
   }
 
+
   @Override
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+  public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
     if (client == null) {
-      throw new RPCException("client is null");
+      throw new RuntimeException("client is null");
     }
     try {
       RPCRequest request = RPCRequest.builder()
