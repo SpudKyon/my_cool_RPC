@@ -71,6 +71,16 @@
             <artifactId>cglib</artifactId>
             <version>3.3.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>5.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.66</version>
+        </dependency>
     </dependencies>
 
 </project>

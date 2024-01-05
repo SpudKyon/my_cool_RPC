@@ -1,6 +1,8 @@
 package com.dongdong.rpc.core.utils;
 
+import com.dongdong.rpc.core.serializer.HessianSerializer;
 import com.dongdong.rpc.core.serializer.JsonSerializer;
+import com.dongdong.rpc.core.serializer.KryoSerializer;
 
 public interface CoolSerializer {
 
@@ -13,11 +15,11 @@ public interface CoolSerializer {
   int getCode();
 
   static CoolSerializer getByCode(int code) {
-    switch (code) {
-      case 1:
-        return new JsonSerializer();
-      default:
-        return null;
-    }
+    return switch (code) {
+      case 1 -> new JsonSerializer();
+      case 2 -> new KryoSerializer();
+      case 3 -> new HessianSerializer();
+      default -> null;
+    };
   }
 }
